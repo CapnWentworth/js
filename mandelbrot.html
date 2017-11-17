@@ -1,0 +1,92 @@
+<html>
+   <head>
+      <title>Mandelbrot</title>
+
+      <script>
+         const MAX_ITERATIONS = 255;
+
+         function mandel(cx,cy){
+            var x = cx; var xx = cx * cx;
+            var y = cy; var yy = cy * cy;
+            var xy = cx * cy;
+            var i = MAX_ITERATIONS;
+            while (--i && ((xx + yy) <=4))
+            {
+               xx = x * x;
+               yy = y * y;
+               xy = x * y;
+               x = cx + (xx - yy);
+               y = cy + xy + xy;
+            }
+            return i;
+         }
+
+      function stringify(x, y){
+         var opSign = y<0 ? "-" : "+";
+         return "<li>" + x + opSign + y + "i returns a count of " +
+                 mandel(x,y) + "</li>";
+      }
+
+      </script>
+
+   </head>
+
+   <body>
+      
+<canvas id="myCanvas" width="1200" height="800"></canvas>
+
+   <script>
+
+      var colors = [];
+      for (var red = 0; red < 255; red+= 24)
+      {
+         for (var blue = 0; blue < 255; blue+= 24)
+         {
+            for (var green = 0; green < 255; green+= 24)
+            {
+               colors.push([red, blue, green]);
+            }
+         }
+      }
+
+
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      var cWidth = c.width;   var cHeight = c.height;
+      
+      var cImg = ctx.createImageData(cWidth,cHeight);
+      var cImgIdx = 0;
+
+      var minX = -2;          var maxX = 1;
+      var maxY = -1;           var minY = 1;
+      var xRange = maxX - minX;
+      var yRange = maxY - minY;
+
+      var xN = 0.0;           var yN = 0.0;
+
+
+      for (var x = 0; x < cWidth; x++)
+      {
+         for (var y = 0; y < cHeight; y++)
+         {
+
+            xN = minX + (x * xRange/cWidth);
+            yN = maxY - (y * yRange/cHeight);
+
+            i = mandel(xN,yN);
+
+            cImgIdx = (x + y * cWidth) * 4;
+            cImg.data[cImgIdx + 0] = colors[i%colors.length][0];
+            cImg.data[cImgIdx + 1] = colors[i%colors.length][1];
+            cImg.data[cImgIdx + 2] = colors[i%colors.length][2];
+            cImg.data[cImgIdx + 3] = 255;
+         }
+      }
+
+      ctx.putImageData(cImg, 0, 0);
+
+   </script>
+
+   </body>
+
+</html>
