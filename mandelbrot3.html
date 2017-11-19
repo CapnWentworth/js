@@ -1,0 +1,141 @@
+<html>
+   <head>
+      <title>Mandelbrot 3</title>
+
+
+<style>
+input {
+      width:5em;
+      border-style:solid;
+      border-width:2px;
+      border-color:#900;
+      border-radius:5px;
+      padding: 5px;
+      margin: 5px;
+}
+
+div.inputLabel {
+     font-weight:bold;
+     font-color:#000;
+     font-family:arial,helvetica,sans-serif;
+     width: 20em;
+}
+
+button {
+      border-radius: 5px;
+      border-style: none;
+      background-color: #900;
+      color:#fff;
+      font-weight: bold;
+      font-family: arial,helvetica,sans-serif;
+      padding: 5px;
+      margin: 5px;
+            }
+
+button:hover{
+
+      transition:0.8s;
+      background-color:#090;
+      cursor:pointer;
+}
+
+
+</style>
+
+      <script>
+         const MAX_ITERATIONS = 4000;
+
+         function mandel(cx,cy){
+            var x = cx; var xx = cx * cx;
+            var y = cy; var yy = cy * cy;
+            var xy = cx * cy;
+            var i = MAX_ITERATIONS;
+            while (--i && ((xx + yy) <=4))
+            {
+               xx = x * x;
+               yy = y * y;
+               xy = x * y;
+               x = cx + (xx - yy);
+               y = cy + xy + xy;
+            }
+            return i;
+         }
+
+
+
+   function paintGrid() {
+
+      var colors = [];
+      for (var red = 0; red < 255; red+= 24)
+      {
+         for (var blue = 0; blue < 255; blue+= 24)
+         {
+            for (var green = 0; green < 255; green+= 24)
+            {
+               colors.push([red, blue, green]);
+            }
+         }
+      }
+
+
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      var cWidth = c.width;   var cHeight = c.height;
+      
+      var cImg = ctx.createImageData(cWidth,cHeight);
+      var cImgIdx = 0;
+
+      var minX = parseFloat(document.getElementById("xMinValue").value);
+      var maxX = parseFloat(document.getElementById("xMaxValue").value);
+      var maxY = parseFloat(document.getElementById("yMaxValue").value);
+
+      var xStep = (maxX - minX)/cWidth;
+
+      var xN = 0.0;           var yN = 0.0;
+
+      for (var x = 0; x < cWidth; x++)
+      {
+         for (var y = 0; y < cHeight; y++)
+         {
+
+            xN = minX + (x * xStep);
+            yN = maxY - (y * xStep);
+
+            i = mandel(xN,yN);
+
+            cImgIdx = (x + y * cWidth) * 4;
+            cImg.data[cImgIdx + 0] = colors[i%colors.length][0];
+            cImg.data[cImgIdx + 1] = colors[i%colors.length][1];
+            cImg.data[cImgIdx + 2] = colors[i%colors.length][2];
+            cImg.data[cImgIdx + 3] = 255;
+         }
+      }
+
+      ctx.putImageData(cImg, 0, 0);
+   }
+
+      </script>
+
+   </head>
+
+   <body>
+      
+           <div>
+                   <form>
+                           <div class="inputLabel">Min X:<input id="xMinValue" value="-2"/></div>
+                           <div class="inputLabel">Max X:<input id="xMaxValue" value="1"/></div>
+                           <div class="inputLabel">Min Y:<input id="yMinValue" value="-1"/></div>
+                           <div class="inputLabel">Max Y:<input id="yMaxValue" value="1"/></div>
+                           <button type="button" onclick="paintGrid()">Generate</button>
+                   </form>
+           </div>
+<canvas id="myCanvas" width="1200" height="800"></canvas>
+
+   <script>
+
+
+   </script>
+
+   </body>
+
+</html>
